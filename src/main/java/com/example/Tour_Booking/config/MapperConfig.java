@@ -1,11 +1,7 @@
 package com.example.Tour_Booking.config;
 
-import com.example.Tour_Booking.dto.CityDTO;
-import com.example.Tour_Booking.dto.TourImageDTO;
-import com.example.Tour_Booking.dto.TourScheduleDTO;
-import com.example.Tour_Booking.entity.City;
-import com.example.Tour_Booking.entity.TourImages;
-import com.example.Tour_Booking.entity.TourSchedule;
+import com.example.Tour_Booking.dto.*;
+import com.example.Tour_Booking.entity.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -18,4 +14,10 @@ public interface MapperConfig {
     TourImageDTO imageToImage(TourImages tourImages);
 
     TourScheduleDTO scheduleToSchedule(TourSchedule tourSchedule);
+
+    TourVisitorDTO visitorToVisitor(TourVisitor tourVisitor);
+
+    BannerDTO bannerToBanner(Banner banner);
+
+
 }

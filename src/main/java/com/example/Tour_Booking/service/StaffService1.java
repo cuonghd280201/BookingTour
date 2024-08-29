@@ -1,30 +1,32 @@
-package com.example.Tour_Booking.service.Impl;
-
+package com.example.Tour_Booking.service;
 
 import com.example.Tour_Booking.common.TourStatus;
+import com.example.Tour_Booking.config.MapperConfig;
 import com.example.Tour_Booking.dto.*;
 import com.example.Tour_Booking.entity.*;
 import com.example.Tour_Booking.exception.ResourceNotFoundException;
 import com.example.Tour_Booking.repository.*;
-import com.example.Tour_Booking.service.*;
+import com.example.Tour_Booking.service.Impl.BannerServiceImpl;
+import com.example.Tour_Booking.service.TourDetailService;
+import com.example.Tour_Booking.service.TourImageService;
+import com.example.Tour_Booking.service.TourScheduleService;
+import com.example.Tour_Booking.service.TourTimeService;
 import com.example.Tour_Booking.utils.CodeGenerator;
 import com.example.Tour_Booking.utils.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.ejb.Local;
-import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class StaffServiceImpl implements StaffService {
+public class StaffService1 {
     private final BannerServiceImpl bannerService;
     private final UserRepository userRepository;
     private final TourDetailService tourDetailService;
@@ -36,35 +38,31 @@ public class StaffServiceImpl implements StaffService {
     private final TourTimeRepository tourTimeRepository;
     private final TourScheduleRepository tourScheduleRepository;
     private final TourImageRepository tourImageRepository;
+    private final MapperConfig mapperConfig;
 
 
 
 
-    @Override
     public ResponseEntity<BaseResponseDTO> addMoreBanne(BannerAddMoreForm bannerAddMoreForm) {
         Set<Banner> bannerSet = bannerService.createBanner(bannerAddMoreForm.getBannerCreateFormSet());
         return ResponseEntity.ok(new BaseResponseDTO(LocalDateTime.now(), HttpStatus.OK, "Create Banner Successfully"));
     }
 
-    @Override
     public ResponseEntity<BaseResponseDTO> viewBannerList() {
         List<Banner> banners = bannerService.viewBannerList();
         return ResponseEntity.ok(new BaseResponseDTO(LocalDateTime.now(), HttpStatus.OK, "View List Banner Successfully", banners));
     }
 
-    @Override
     public ResponseEntity<BaseResponseDTO> updateBanner(BannerDTO bannerDTO) {
         bannerService.updateBanner(bannerDTO);
         return ResponseEntity.ok(new BaseResponseDTO(LocalDateTime.now(), HttpStatus.OK, "Update Banner Successfully"));
     }
 
-    @Override
     public ResponseEntity<BaseResponseDTO> deleteBanner(UUID id) {
         bannerService.deleteBanner(id);
         return ResponseEntity.ok(new BaseResponseDTO(LocalDateTime.now(), HttpStatus.OK, "Delete Banner Successfully"));
     }
 
-    @Override
     public ResponseEntity<BaseResponseDTO> createTour(TourCreateForm tourCreateForm) {
         //User user = userRepository.findByFireBaseUid(principal.getName()).orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
         List<String> listMessage = new ArrayList<>();
@@ -127,7 +125,7 @@ public class StaffServiceImpl implements StaffService {
         tour.setCity(cityRepository.findByName(tourCreateForm.getCity())
                 .orElseThrow(() -> new ResourceNotFoundException("City not found!")));
         tour.setTourStatus(TourStatus.ACTIVE);
-       // tour.setCreateBy(user.getName());
+        // tour.setCreateBy(user.getName());
         tour.setTourDetail(tourDetail);
         tour.setTourTimeSet(tourTimeSet);
         tour.setTourSchedules(tourScheduleSet);
@@ -163,16 +161,31 @@ public class StaffServiceImpl implements StaffService {
     }
 
     //Image
-        public ResponseEntity<BaseResponseDTO> addMoreImage(TourImageAddMoreForm tourImageAddMoreForm){
-            Tour tour = tourRepository.findById(tourImageAddMoreForm.getId()).orElseThrow(() -> new ResourceNotFoundException("Tour not found"));
-            Set<TourImages> tourImagesSet = tourImageService.createImage(tourImageAddMoreForm.getTourImageCreateFormSet());
-            tour.setTourImagesSet(tourImagesSet);
-            for(TourImages tourImages : tourImagesSet){
-                tourImages.setTour(tour);
-                tourImageRepository.save(tourImages);
-            }
-            return ResponseEntity.ok(new BaseResponseDTO(LocalDateTime.now(), HttpStatus.OK, "Add Successsfully"));
+    public ResponseEntity<BaseResponseDTO> addMoreImage(TourImageAddMoreForm tourImageAddMoreForm){
+        Tour tour = tourRepository.findById(tourImageAddMoreForm.getId()).orElseThrow(() -> new ResourceNotFoundException("Tour not found"));
+        Set<TourImages> tourImagesSet = tourImageService.createImage(tourImageAddMoreForm.getTourImageCreateFormSet());
+        tour.setTourImagesSet(tourImagesSet);
+        for(TourImages tourImages : tourImagesSet){
+            tourImages.setTour(tour);
+            tourImageRepository.save(tourImages);
         }
+        return ResponseEntity.ok(new BaseResponseDTO(LocalDateTime.now(), HttpStatus.OK, "Add Successsfully"));
+    }
+
+    public ResponseEntity<BaseResponseDTO> updateImage(TourImageDTO tourImageDTO){
+        tourImageService.updateImage(tourImageDTO);
+        return ResponseEntity.ok(new BaseResponseDTO(LocalDateTime.now(), HttpStatus.OK, "Update Successfully"));
+    }
+
+    public ResponseEntity<BaseResponseDTO> deleteImage(UUID id){
+        tourImageService.deleteImage(id);
+        return ResponseEntity.ok(new BaseResponseDTO(LocalDateTime.now(), HttpStatus.OK, "Delete Successfully"));
+    }
+    public ResponseEntity<BaseResponseDTO> getAllImage(){
+        List<TourImages> tourImagesList = tourImageRepository.findAll();
+        List<TourImageDTO> tourImageDTOList = tourImagesList.stream().map(mapperConfig::imageToImage).collect(Collectors.toList());
+        return ResponseEntity.ok(new BaseResponseDTO(LocalDateTime.now(), HttpStatus.OK, "View List Successfully", tourImageDTOList));
+    }
 
 
 }
