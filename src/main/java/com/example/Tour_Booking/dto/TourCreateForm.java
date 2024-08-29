@@ -1,8 +1,17 @@
 package com.example.Tour_Booking.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class TourCreateForm {
     private String title;
 
@@ -18,7 +27,7 @@ public class TourCreateForm {
 
     private String city;
 
-//    private TourDetailCreateForm tourDetailCreateForm;
+    private TourDetailCreateForm tourDetailCreateForm;
 
     private Set<TourScheduleCreateForm> listTourSchedule;
 

@@ -17,5 +17,5 @@ public interface StaffService {
 
     ResponseEntity<BaseResponseDTO> deleteBanner(UUID id);
 
-    ResponseEntity<BaseResponseDTO> createTour(Principal principal, TourCreateForm tourCreateForm);
+    ResponseEntity<BaseResponseDTO> createTour(TourCreateForm tourCreateForm);
 }
